@@ -1,4 +1,5 @@
 using Serilog;
+using Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,14 @@ builder.Host.UseSerilog();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<CorrelationIdInterceptor>();
+builder.Services.AddHttpClient("test")
+    .AddHttpMessageHandler<CorrelationIdInterceptor>();
+
 var app = builder.Build();
+
+app.UseMiddleware<TraceMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
