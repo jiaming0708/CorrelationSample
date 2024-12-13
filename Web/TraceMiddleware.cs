@@ -1,14 +1,7 @@
 ﻿namespace Web;
 
-public class TraceMiddleware
+public class TraceMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public TraceMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         const string xCorrelationId = "x-correlation-id";
@@ -21,6 +14,6 @@ public class TraceMiddleware
 
         context.Response.Headers[xCorrelationId] = value;
 
-        await _next(context);
+        await next(context);
     }
 }
